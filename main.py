@@ -7,6 +7,8 @@ from bson.son import SON
 from random import randrange
 from datetime import timedelta, datetime
 
+
+date = '2016-10-22'
 polygon = [
         [
             -0.17578125,
@@ -54,8 +56,8 @@ def ais_message():
 
     properties = dict()
     properties['MMSI'] = randint(111111, 999999)
-    d1 = datetime.strptime("2016-10-21 00:00:00", "%Y-%m-%d %H:%M:%S")
-    d2 = datetime.strptime("2016-10-21 23:59:59", "%Y-%m-%d %H:%M:%S")
+    d1 = datetime.strptime(date + " 00:00:00", "%Y-%m-%d %H:%M:%S")
+    d2 = datetime.strptime(date + " 23:59:59", "%Y-%m-%d %H:%M:%S")
     properties['time'] = datetime.strftime(random_date(d1, d2), "%Y-%m-%dT%H:%M:%S.%f")
     message['properties'] = properties
     return message
@@ -64,7 +66,7 @@ def ais_message():
 def insert():
     start = time.time()
     print("started insert")
-    for i in range(100000):
+    for i in range(1000000):
 
         collection.insert_one(ais_message())
 
@@ -96,7 +98,7 @@ def get(query):
 if __name__ == '__main__':
     client = pymongo.MongoClient("localhost", 27017)
     db = client.test
-    collection = db['21-10-2016']
+    collection = db[date]
     collection.ensure_index([('geometry', pymongo.GEOSPHERE)])
     # insert()
     max_distance = 10000  # meters
@@ -107,7 +109,7 @@ if __name__ == '__main__':
     query_within = {
         'geometry': {
             '$geoWithin': {'$geometry': {'type': 'Polygon', 'coordinates': [polygon]}}
-        }, 'properties.time': {'$gte': '2016-10-21T10:00:00', '$lt': '2016-10-21T10:45:00'}
+        }, 'properties.time': {'$gte': '{date}T10:00:00'.format(date=date), '$lt': '{date}T10:45:00'.format(date=date)}
     }
 
     get(query=query_within)
