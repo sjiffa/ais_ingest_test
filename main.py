@@ -45,7 +45,7 @@ def random_date(start, end):
 def ais_message():
     message = dict()
 
-    pos = [uniform(-180, 180), uniform(-90, 90)]
+    pos = [uniform(-13, 12), uniform(40, 75)]
     message['type'] = 'Feature'
     message["geometry"] = {
         "type": "Point",
@@ -64,7 +64,7 @@ def ais_message():
 def insert():
     start = time.time()
     print("started insert")
-    for i in range(1000000):
+    for i in range(100000):
 
         collection.insert_one(ais_message())
 
@@ -107,7 +107,7 @@ if __name__ == '__main__':
     query_within = {
         'geometry': {
             '$geoWithin': {'$geometry': {'type': 'Polygon', 'coordinates': [polygon]}}
-        }, 'properties.time': {'$gte': '2016-10-21T10:00:00', '$lt': '2016-10-21T11:45:00'}
+        }, 'properties.time': {'$gte': '2016-10-21T10:00:00', '$lt': '2016-10-21T10:45:00'}
     }
 
     get(query=query_within)
